@@ -35,7 +35,7 @@ export const store = {
 const users = store.db.collection('users');
 
 store.seedCollections = async function seedCollections() {
-  if (store.currentUser) {
+  if (store.currentUser && store.currentUser.uid) {
     const transactions = await users.doc(store.currentUser.uid).collection('transactions').get();
     const budgets = await users.doc(store.currentUser.uid).collection('budgets').get();
     const accounts = await users.doc(store.currentUser.uid).collection('accounts').get();
@@ -79,7 +79,7 @@ store.subscribeToCollections = function initCollections() {
           trans.push(tran);
         });
         store.transactionsAvailable = trans;
-      });
+      }, function (error) {});
 
     budgets
       .onSnapshot((budgetsRef) => {
@@ -90,7 +90,7 @@ store.subscribeToCollections = function initCollections() {
           budgetsList.push(budget);
         });
         store.budgetsAvailable = budgetsList;
-      });
+      }, function (error) {});
 
     accounts
       .onSnapshot((acctsRef) => {
@@ -101,7 +101,7 @@ store.subscribeToCollections = function initCollections() {
           accts.push(account);
         });
         store.accountsAvailable = accts;
-      });
+      }, function (error) {});
   }
 };
 
@@ -114,5 +114,5 @@ if (store.currentUser) {
         trans.push(tran);
       });
       store.usersAvailable = trans;
-    });
+    }, function (error) {});
 }

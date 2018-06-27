@@ -11,11 +11,11 @@ import { store } from '../store';
 
 export default {
   name: 'Overview',
-  data: function() { return { accounts: null } },
+  data() { return { accounts: null } },
   components: { Balance },
-  mounted () {
+  mounted() {
     const state = store;
     this.accounts = state.accountsAvailable;
-  }
+  },
 };
 </script>

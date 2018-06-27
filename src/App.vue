@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-content>
-      <Nav :user="user" v-if="user"></Nav>
+      <Nav :user='user' v-if='user'></Nav>
       <v-container fluid>
       <router-view/>
       </v-container>
@@ -11,14 +11,10 @@
 
 <script>
 import Nav from './components/Nav';
+
 export default {
   name: 'App',
-  props: {
-    user: {
-      default: null,
-    },
-  },
-  data() { return { user: this.user }; },
+  props: ['user'],
   components: { Nav },
 };
 </script>
