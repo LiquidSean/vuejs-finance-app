@@ -18,12 +18,12 @@ Vue.use(VueFire);
 Vue.use(Vuetify);
 
 const config = {
-  apiKey: 'AIzaSyCzSukjC23k1fTiLiQEDfVG5a_-WDyMMr0',
-  authDomain: 'finance-app-9099c.firebaseapp.com',
-  databaseURL: 'https://finance-app-9099c.firebaseio.com',
-  projectId: 'finance-app-9099c',
-  storageBucket: 'finance-app-9099c.appspot.com',
-  messagingSenderId: '793643547458',
+  apiKey: '',
+  authDomain: '',
+  databaseURL: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
 };
 
 /* eslint-disable no-new */
