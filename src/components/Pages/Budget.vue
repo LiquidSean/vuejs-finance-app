@@ -12,6 +12,13 @@
                     <v-layout wrap>
                       <v-flex xs12 sm6 md4>
                         <v-text-field
+                          label='Name'
+                          value=''
+                          v-model='editedItem.name'
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs12 sm6 md4>
+                        <v-text-field
                           label='Amount'
                           value=''
                           prefix='$'
@@ -84,7 +91,7 @@
                   </v-card-title>
                   <div v-for='budget in budgets' :key='budget.id'>
                     <v-card-text>
-                      <span class="headline">{{budget.category}}</span>
+                      <span class="headline">{{budget.name}}</span>
                       <v-layout>
                         <v-flex xs10>
                           <v-progress-linear
@@ -117,6 +124,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import categories from '../../utils/categories';
 
 export default {
   name: "Budget",
@@ -126,26 +134,9 @@ export default {
         amount: 0,
         category: '',
         frequency: '',
+        name: '',
       },
-      categories: [
-        {value: 'auto', text: 'Auto & Transport'},
-        {value: 'bills', text: 'Bills & Utilities'},
-        {value: 'education', text: 'Education'},
-        {value: 'entertainment', text: 'Entertainment'},
-        {value: 'food', text: 'Food & Dining'},
-        {value: 'gifts', text: 'Gifts & Donations'},
-        {value: 'health', text: 'Health & Fitness'},
-        {value: 'home', text: 'Home'},
-        {value: 'investments', text: 'Investments'},
-        {value: 'kids', text: 'Kids'},
-        {value: 'misc', text: 'Misc Expenses'},
-        {value: 'personal', text: 'Personal Care'},
-        {value: 'pets', text: 'Pets'},
-        {value: 'shopping', text: 'Shopping'},
-        {value: 'taxes', text: 'Taxes'},
-        {value: 'travel', text: 'Travel'},
-        {value: 'uncategorized', text: 'Uncategorized'},
-      ],
+      categories: categories,
       category: {
         value: '', text: '',
       },
@@ -158,7 +149,7 @@ export default {
       return this.$store.getters.budgets;
     },
     user() {
-    return this.$store.getters.user;
+      return this.$store.getters.user;
     },
     db() {
       return this.$store.getters.db;
@@ -178,8 +169,8 @@ export default {
       // Don't send ID as part of payload
       const budgetObject = {
         amount: this.editedItem.amount,
+        category: this.category.value,
         name: this.editedItem.name,
-        category: this.editedItem.category,
         frequency: this.editedItem.frequency,
         id: this.editedItem.id ? this.editedItem.id : 0,
       };

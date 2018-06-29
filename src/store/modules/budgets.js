@@ -63,10 +63,10 @@ export default {
         if (findRecord) {
           return db
             .collection('users')
-            .doc(currentUser.uid)
+            .doc(currentUser.user.uid)
             .collection('budgets')
-            .doc(budgetObject.id.toString())
-            .update(budgetObject)
+            .doc(id)
+            .update({ amount: budgetObject.amount, name: budgetObject.name, frequency: budgetObject.frequency, category: budgetObject.category })
             .then(() => {
               commit('updateBudget', budgetObject);
               return resolve();
@@ -74,9 +74,9 @@ export default {
         }
         return db
           .collection('users')
-          .doc(currentUser.uid)
+          .doc(currentUser.user.uid)
           .collection('transactions')
-          .add(budgetObject)
+          .add({ amount: budgetObject.amount, name: budgetObject.name, frequency: budgetObject.frequency, category: budgetObject.category })
           .then((doc) => {
             budgetObject.id = doc.id;
             commit('addBudget', budgetObject);
@@ -95,7 +95,7 @@ export default {
         if (findRecord) {
           return db
             .collection('users')
-            .doc(currentUser.uid)
+            .doc(currentUser.user.uid)
             .collection('budgets')
             .doc(id)
             .delete(id)

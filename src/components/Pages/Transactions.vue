@@ -65,6 +65,17 @@
                   label='Account Type'
                 ></v-select>
               </v-flex>
+              <v-flex xs12 sm6 md4>
+                        <v-select
+                          v-model="category"
+                          :items="categories"
+                          item-text="text"
+                          item-value="value"
+                          label="Category"
+                          return-object
+                          single-line
+                        ></v-select>
+                      </v-flex>
             </v-layout>
           </v-container>
         </v-card-text>
@@ -95,6 +106,7 @@
         <td class='text-xs-center'>{{ props.item.transaction_type }}</td>
         <td class='text-xs-center'>{{ props.item.memo }}</td>
         <td class='text-xs-center'>{{ props.item.status }}</td>
+        <td class='text-xs-center'>{{ props.item.category }}</td>
         <td class='justify-center layout px-0'>
           <v-btn icon class='mx-0' @click='editItem(props.item)'>
             <v-icon color='teal'>edit</v-icon>
@@ -117,12 +129,15 @@ import Vue from 'vue';
 import { store } from '../../store';
 import { mapState, mapActions } from 'vuex'
 import transactions from '../../store/modules/transactions';
+import categories from '../../utils/categories';
 
 export default {
   name: 'Transactions',
   data() {
     return {
       search: '',
+      category: '',
+      categories: categories,
       dateMenu: false,
       date: null,
       dialog: false,
@@ -143,6 +158,7 @@ export default {
         transaction_date: {
           seconds: 0,
         },
+        category: '',
       },
       defaultItem: {
         id: '',
@@ -157,6 +173,7 @@ export default {
         transaction_date: {
           seconds: 0,
         },
+        category: '',
       },
       fields: [
         {
@@ -193,6 +210,11 @@ export default {
           value: 'status',
           sortable: true,
           text: 'Status',
+        },
+        {
+          value: 'category',
+          sortable: true,
+          text: 'Category',
         },
         {
           value: 'actions',
@@ -254,6 +276,11 @@ export default {
           seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000: null,
         },
         id: this.editedItem.id ? this.editedItem.id : 0,
+        category: this.category.value,
+        created: {
+          seconds: this.editedItem.created.seconds ? this.editedItem.created.seconds: Date.now() / 1000,
+        },
+        transaction_type: this.editedItem.transaction_type,
       };
       this.saveTransaction({tranObject, db: this.db, user: this.user})
         .then(() => {

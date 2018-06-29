@@ -63,20 +63,39 @@ export default {
         if (findRecord) {
           return db
             .collection('users')
-            .doc(currentUser.uid)
+            .doc(currentUser.user.uid)
             .collection('transactions')
-            .doc(this.editedItem.id.toString())
-            .update(tranObject)
+            .doc(id)
+            .update({
+              amount: tranObject.amount,
+              memo: tranObject.memo,
+              status: tranObject.status,
+              created: tranObject.created,
+              account_type: tranObject.account_type,
+              transaction_type: tranObject.transaction_type,
+              transaction_date: tranObject.transaction_date,
+              category: tranObject.category,
+            })
             .then(() => {
               commit('updateTransaction', tranObject);
               return resolve();
             });
         }
+
         return db
           .collection('users')
-          .doc(currentUser.uid)
+          .doc(currentUser.user.uid)
           .collection('transactions')
-          .add(tranObject)
+          .add({
+            amount: tranObject.amount,
+            memo: tranObject.memo,
+            status: tranObject.status,
+            created: tranObject.created,
+            account_type: tranObject.account_type,
+            transaction_type: tranObject.transaction_type,
+            transaction_date: tranObject.transaction_date,
+            category: tranObject.category,
+          })
           .then((doc) => {
             tranObject.id = doc.id;
             commit('addTransaction', tranObject);
@@ -95,7 +114,7 @@ export default {
         if (findRecord) {
           return db
             .collection('users')
-            .doc(currentUser.uid)
+            .doc(currentUser.user.uid)
             .collection('transactions')
             .doc(id)
             .delete(id)
