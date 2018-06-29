@@ -1,21 +1,33 @@
 <template>
   <div>
-    <Balance :accounts="accounts"></Balance>
+    <Accounts></Accounts>
   </div>
 
 </template>
 
 <script>
-import Balance from './Balance';
+import Accounts from './Pages/Accounts';
 import { store } from '../store';
 
 export default {
   name: 'Overview',
-  data() { return { accounts: null } },
-  components: { Balance },
-  mounted() {
-    const state = store;
-    this.accounts = state.accountsAvailable;
+  components: { Accounts },
+  computed: {
+    user() {
+      return this.$store.getters.user;
+    },
+    db() {
+      return this.$store.getters.db;
+    },
   },
+  updated() {
+    this.$router.replace(this.$route.path);
+  },
+  created () {
+    // this.$store.dispatch('accounts/setAccountsListener', { user: this.user, db: this.db });
+    // this.$store.dispatch('budgets/setBudgetsListener', { user: this.user, db: this.db });
+    // this.$store.dispatch('transactions/setTransactionsListener', { user: this.user, db: this.db });
+  }
+
 };
 </script>

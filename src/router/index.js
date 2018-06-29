@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Overview from '@/components/Overview';
-import Budget from '@/components/Budget';
-import Transactions from '@/components/Transactions';
+import Budget from '@/components/Pages/Budget';
+import Transactions from '@/components/Pages/Transactions';
 import Login from '@/components/Login';
-import firebase from 'firebase';
+import { store } from '../store';
 
 Vue.use(Router);
 
@@ -51,7 +51,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  const currentUser = firebase.auth().currentUser;
+  const currentUser = store.getters.user;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   if (requiresAuth && !currentUser) {
     next('login');

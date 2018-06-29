@@ -6,9 +6,9 @@ import firebase from 'firebase/app';
 import Vuetify from 'vuetify';
 import 'firebase/firestore';
 
-// Styles
+const App = () => import('./App');
 
-import App from './App';
+// Styles
 import router from './router';
 import { store } from './store';
 
@@ -18,22 +18,32 @@ Vue.config.productionTip = false;
 Vue.use(VueFire);
 Vue.use(Vuetify);
 
-let app;
-firebase.auth().onAuthStateChanged((user) => {
-  store.currentUser = user;
-  store.subscribeToCollections();
-  store.seedCollections().then(() => {
-    if (!app) {
-      /* eslint-disable no-new */
-      app = new Vue({
-        el: '#app',
-        template: '<App :user="user" />',
-        data() { return { user }; },
-        components: { App },
-        router,
-      });
-    } else {
-      app.user = store.currentUser;
+const config = {
+  apiKey: 'AIzaSyCzSukjC23k1fTiLiQEDfVG5a_-WDyMMr0',
+  authDomain: 'finance-app-9099c.firebaseapp.com',
+  databaseURL: 'https://finance-app-9099c.firebaseio.com',
+  projectId: 'finance-app-9099c',
+  storageBucket: 'finance-app-9099c.appspot.com',
+  messagingSenderId: '793643547458',
+};
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  store,
+  template: '<App/>',
+  components: { App },
+  mounted() {
+    firebase.initializeApp(config);
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch('autoSignIn', user);
+      }
+    });
+    if (this.$store.getters.user) {
+      this.$store.dispatch('autoSignIn', this.user);
     }
-  });
+  },
 });
+

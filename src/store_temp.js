@@ -79,7 +79,7 @@ store.subscribeToCollections = function initCollections() {
           trans.push(tran);
         });
         store.transactionsAvailable = trans;
-      }, function (error) {});
+      }, () => {});
 
     budgets
       .onSnapshot((budgetsRef) => {
@@ -90,7 +90,7 @@ store.subscribeToCollections = function initCollections() {
           budgetsList.push(budget);
         });
         store.budgetsAvailable = budgetsList;
-      }, function (error) {});
+      }, () => {});
 
     accounts
       .onSnapshot((acctsRef) => {
@@ -101,7 +101,7 @@ store.subscribeToCollections = function initCollections() {
           accts.push(account);
         });
         store.accountsAvailable = accts;
-      }, function (error) {});
+      }, () => {});
   }
 };
 
@@ -114,5 +114,5 @@ if (store.currentUser) {
         trans.push(tran);
       });
       store.usersAvailable = trans;
-    }, function (error) {});
+    }, () => {});
 }

@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <v-container fluid>
+    <v-card>
       <v-dialog v-model='dialog' max-width='500px'>
       <v-btn slot='activator' color='primary' dark class='mb-2'>Add New Transaction</v-btn>
       <v-card>
@@ -47,14 +48,14 @@
                 >
                   <v-text-field
                     slot='activator'
-                    v-model='editedItem.transaction_date_formatted'
+                    v-model='computedDateFormatted'
                     label='Date'
                     hint='MM-DD-YYYY'
                     persistent-hint
                     prepend-icon='event'
                     readonly
                   ></v-text-field>
-                  <v-date-picker v-model='editedItem.transaction_date_formatted' no-title @input='dateMenu = false'></v-date-picker>
+                  <v-date-picker v-model='date' no-title @input='dateMenu = false'></v-date-picker>
                 </v-menu>
               </v-flex>
               <v-flex xs12 sm6 md4>
@@ -88,6 +89,7 @@
     >
       <template slot='items' slot-scope='props'>
         <td>{{ props.item.amount }}</td>
+        <td class='text-xs-center'>{{ normalizeDate(props.item.transaction_date) }}</td>
         <td class='text-xs-center'>{{ normalizeDate(props.item.created) }}</td>
         <td class='text-xs-center'>{{ props.item.account_type }}</td>
         <td class='text-xs-center'>{{ props.item.transaction_type }}</td>
@@ -106,11 +108,15 @@
         Your search for '{{ search }}' found no results.
       </v-alert>
     </v-data-table>
-  </div>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-import { store } from '../store';
+import Vue from 'vue';
+import { store } from '../../store';
+import { mapState, mapActions } from 'vuex'
+import transactions from '../../store/modules/transactions';
 
 export default {
   name: 'Transactions',
@@ -118,7 +124,7 @@ export default {
     return {
       search: '',
       dateMenu: false,
-      date: '',
+      date: null,
       dialog: false,
       editedIndex: -1,
       statuses: ['pending', 'processed', 'canceled'],
@@ -129,24 +135,29 @@ export default {
         amount: 0,
         memo: '',
         status: '',
-        created: '',
+        created: {
+          seconds: 0,
+        },
         account_type: '',
         transaction_type: '',
-        transaction_date: '',
-        transaction_date_formatted: '',
+        transaction_date: {
+          seconds: 0,
+        },
       },
       defaultItem: {
         id: '',
         amount: 0,
         memo: '',
         status: '',
-        created: '',
+        created: {
+          seconds: 0,
+        },
         account_type: '',
         transaction_type: '',
-        transaction_date: '',
-        transaction_date_formatted: '',
+        transaction_date: {
+          seconds: 0,
+        },
       },
-      transactions: [],
       fields: [
         {
           value: 'amount',
@@ -154,9 +165,14 @@ export default {
           text: 'Amount',
         },
         {
+          value: 'transaction_date',
+          sortable: true,
+          text: 'Transaction Date',
+        },
+        {
           value: 'created',
           sortable: true,
-          text: 'Created Data',
+          text: 'Created Date',
         },
         {
           value: 'account_type',
@@ -186,80 +202,118 @@ export default {
       ],
     };
   },
-  watch: {
-    dialog(val) {
-      (val || this.close());
+  computed: {
+    computedDateFormatted () {
+      return this.formatDate(this.date)
+    },
+    transactions() {
+      return this.$store.getters['transactions'];
+    },
+    user() {
+    return this.$store.getters.user;
+    },
+    db() {
+      return this.$store.getters.db;
     },
   },
   mounted() {
-    const state = store;
-    const normailized = state.transactionsAvailable.map(tran => ({
-      id: tran.id,
-      amount: tran.amount,
-      created: tran.created,
-      transaction_type: tran.transaction_type,
-      memo: tran.memo,
-      status: tran.status,
-      account_type: tran.account_type,
-      transaction_date: tran.transaction_date,
-      transaction_date_formatted: this.normalizeDate(tran.transaction_date),
-    }));
-    this.totalRows = normailized.length;
-    this.transactions = normailized;
-    this.search = '';
+    this.$store.dispatch('getTransactions', { user: this.user, db: this.db })
+      .then(() => {
+      this.totalRows = transactions.length;
+      this.search = '';
+    });
   },
   methods: {
+    ...mapActions({
+      saveTransaction: 'saveTransaction',
+      deleteTransaction: 'deleteTransaction',
+    }),
     editItem(item) {
       this.editedItem = Object.assign({}, item);
+      // Set date property for picker
+      this.date = this.dateToISO(item.transaction_date);
       this.editedIndex = this.transactions.indexOf(item);
       this.dialog = true;
     },
     deleteItem(item) {
-      const state = store;
+      // const state = store;
+      // const index = this.transactions.indexOf(item);
+      // const shouldDelete = confirm('Are you sure you want to delete this item?');
+      // if (shouldDelete) {
+      //   this.transactions.splice(index, 1);
+      //   state.db
+      //     .collection('users')
+      //     .doc(state.currentUser.uid)
+      //     .collection('transactions')
+      //     .doc(item.id)
+      //     .delete();
+      // }
       const index = this.transactions.indexOf(item);
-      const shouldDelete = confirm('Are you sure you want to delete this item?');
+      const shouldDelete = confirm('Are you sure you want to delete this account?');
       if (shouldDelete) {
-        this.desserts.splice(index, 1);
-        state.db
-          .collection('transactions')
-          .doc(item.id)
-          .delete();
+        this.deleteTransaction(item, index)
+        .then(() => {
+          this.close();
+        });
       }
     },
     saveItem() {
-      const state = store;
-      // Don't send ID as part of payload
       const tranObject = {
         amount: this.editedItem.amount,
         status: this.editedItem.status,
         memo: this.editedItem.memo,
         account_type: this.editedItem.account_type,
-        transaction_date: this.editedItem.transaction_date,
-        transaction_type: this.editedItem.transaction_type,
-        created: this.editItem.created,
+        transaction_date:  {
+          seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000: null,
+        },
       };
-      if (this.editedIndex > -1) {
-        Object.assign(this.transactions[this.editedIndex], this.editedItem);
-        state.db
-          .collection('users')
-          .doc(state.currentUser.uid)
-          .collection('transactions')
-          .doc(this.editedItem.id.toString())
-          .update(tranObject)
-          .then(() => {
-            this.close();
-          });
-      } else {
-        state.db
-          .collection('users')
-          .doc(state.currentUser.uid)
-          .collection('transactions')
-          .add(tranObject)
-          .then((doc) => {
-            this.editedItem.id = doc.id;
-            this.transactions.push(this.editedItem);
-          });
-      }
+      this.saveTransaction(tranObject, this.editedIndex)
+        .then(() => {
+          this.close();
+      });
+
+      // const state = store;
+      // // Don't send ID as part of payload
+      // const tranObject = {
+      //   amount: this.editedItem.amount,
+      //   status: this.editedItem.status,
+      //   memo: this.editedItem.memo,
+      //   account_type: this.editedItem.account_type,
+      //   transaction_date:  {
+      //     seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000: null,
+      //   },
+      //   transaction_type: this.editedItem.transaction_type,
+      //   created: this.editedItem.created,
+      // };
+      // this.editedItem.transaction_date = tranObject.transaction_date;
+
+      // if (this.editedIndex > -1) {
+
+      //   Vue.set(this.transactions, this.editedIndex, this.editedItem);
+      //   state.db
+      //     .collection('users')
+      //     .doc(state.currentUser.uid)
+      //     .collection('transactions')
+      //     .doc(this.editedItem.id.toString())
+      //     .update(tranObject)
+      //     .then(() => {
+      //       this.close();
+      //     });
+      // } else { // add new transaction
+      //   tranObject.created = {
+      //     seconds: Date.now() / 1000,
+      //   };
+      //   state.db
+      //     .collection('users')
+      //     .doc(state.currentUser.uid)
+      //     .collection('transactions')
+      //     .add(tranObject)
+      //     .then((doc) => {
+      //       this.editedItem.id = doc.id;
+      //       this.transactions.push(this.editedItem);
+      //       this.close();
+      //     });
+      // }
     },
     close() {
       this.dialog = false;
@@ -272,11 +326,24 @@ export default {
       }
       return null;
     },
+    dateToISO(date) {
+      if (date && date.seconds) {
+        return new Date(1000 * date.seconds).toISOString();
+      }
+      return null;
+    },
     formatDate(date) {
       if (!date) return null;
 
-      const [year, month, day] = date.split('-');
-      return `${month}/${day}/${year}`;
+      if (date.includes('T')) { // ISO String
+        const formattedDate = new Date(date);
+        return `${formattedDate.getMonth() + 1}/${formattedDate.getDate()}/${formattedDate.getFullYear()}`;
+      } else {
+        const [year, month, day] = date.split('-');
+        return `${month}/${day}/${year}`;
+      }
+      return date;
+
     },
   },
 };

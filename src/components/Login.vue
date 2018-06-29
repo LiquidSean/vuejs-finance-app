@@ -19,7 +19,13 @@
             label='Password'
           ></v-text-field>
 
-          <v-btn v-on:click='signIn'>Connect</v-btn>
+          <v-btn :disabled="loading" :loading="loading" v-on:click='signIn'>
+            Connect
+            <v-icon right>lock_open</v-icon>
+            <span slot="loader" class="custom-loader">
+              <v-icon light>cached</v-icon>
+            </span>
+            </v-btn>
           </v-flex>
 
         </v-layout>
@@ -39,19 +45,40 @@ export default {
       password: '',
     };
   },
+  computed: {
+    loading () {
+        return this.$store.getters.loading
+      },
+      user () {
+        return this.$store.getters.user
+      },
+  },
+  created () {
+    this.checkCurrentLogin()
+  },
+  updated () {
+    this.checkCurrentLogin()
+  },
   methods: {
     signIn() {
       const email = this.email;
       const pwd = this.password;
       firebase.auth().signInWithEmailAndPassword(email, pwd).then((user) => {
-        store.currentUser = user;
-        this.$router.replace('overview');
+        localStorage.user = JSON.stringify(user)
+        this.$store.dispatch('signUserIn', {email: this.email, password: this.password})
+        this.$router.replace(this.$route.query.redirect || 'overview');
       }, (err) => {
         alert("Meee Seeks don't like " + err.message);
       }).catch(err => console.log(err));
     },
+    checkCurrentLogin () {
+      if (this.user) {
+        this.$store.dispatch('autoSignIn', this.user)
+        this.$router.replace(this.$route.query.redirect || 'overview');
+      }
+    },
   },
-};
+}
 </script>
 
 <style scoped>  /* 'scoped' attribute limit the CSS to this component only */
