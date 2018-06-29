@@ -24,9 +24,9 @@ export default {
     this.$router.replace(this.$route.path);
   },
   created () {
-    // this.$store.dispatch('accounts/setAccountsListener', { user: this.user, db: this.db });
-    // this.$store.dispatch('budgets/setBudgetsListener', { user: this.user, db: this.db });
-    // this.$store.dispatch('transactions/setTransactionsListener', { user: this.user, db: this.db });
+    //this.$store.dispatch('accounts/setAccountsListener', { user: this.user, db: this.db });
+    //this.$store.dispatch('setBudgetsListener', { user: this.user, db: this.db });
+    //this.$store.dispatch('setTransactionsListener', { user: this.user, db: this.db });
   }
 
 };

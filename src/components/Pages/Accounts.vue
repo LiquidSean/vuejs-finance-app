@@ -185,39 +185,16 @@ export default {
       const state = null;
       // Don't send ID as part of payload
       const acctObject = {
-        amount: this.editedItem.amount,
+        balance: this.editedItem.balance,
         name: this.editedItem.name,
         memo: this.editedItem.memo,
-        account_type: this.editedItem.account_type,
+        type: this.editedItem.type,
+        id: this.editedItem.id ? this.editedItem.id : 0,
       };
-      this.saveAccount(acctObject, this.editedIndex)
+      this.saveAccount({acctObject, db: this.db, user: this.user})
         .then(() => {
           this.close();
       });
-
-      // if (this.editedIndex > -1) {
-      //   Vue.set(this.accounts, this.editedIndex, this.editedItem);
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('accounts')
-      //     .doc(this.editedItem.id.toString())
-      //     .update(acctObject)
-      //     .then(() => {
-      //       this.close();
-      //     });
-      // } else { // add new transaction
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('accounts')
-      //     .add(acctObject)
-      //     .then((doc) => {
-      //       this.editedItem.id = doc.id;
-      //       this.accounts.push(this.editedItem);
-      //       this.close();
-      //     });
-      // }
     },
     deleteItem(item) {
       //const state = store;
@@ -225,18 +202,10 @@ export default {
       const index = this.accounts.indexOf(item);
       const shouldDelete = confirm('Are you sure you want to delete this account?');
       if (shouldDelete) {
-        this.deleteAccount(acctObject, index)
-        .then(() => {
-          this.close();
-      });
-      //   this.accounts.splice(index, 1);
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('accounts')
-      //     .doc(item.id)
-      //     .delete();
-      //
+        this.deleteAccount({id: item.id, db: this.db, user: this.user})
+          .then(() => {
+            this.close();
+        });
       }
     },
     editItem(item) {

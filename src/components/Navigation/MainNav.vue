@@ -15,7 +15,6 @@
         grow
       >
         <v-tabs-slider color='yellow'></v-tabs-slider>
-
         <v-tab to='/overview'>
           Overview
         </v-tab>
@@ -26,16 +25,6 @@
             Transactions
         </v-tab>
       </v-tabs>
-
-      <!-- <router-link
-       to='/Overview' replace
-       >Overview</router-link>
-       <router-link
-       to='/budget'
-       >Budget</router-link>
-       <router-link
-       to='/transactions'
-       >Transactions</router-link> -->
     </v-toolbar>
   </div>
 </template>

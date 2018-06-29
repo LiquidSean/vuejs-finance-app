@@ -6,11 +6,10 @@ import firebase from 'firebase/app';
 import Vuetify from 'vuetify';
 import 'firebase/firestore';
 
-const App = () => import('./App');
-
-// Styles
 import router from './router';
 import { store } from './store';
+
+const App = () => import('./App');
 
 
 Vue.config.productionTip = false;

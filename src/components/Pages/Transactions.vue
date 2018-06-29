@@ -236,18 +236,6 @@ export default {
       this.dialog = true;
     },
     deleteItem(item) {
-      // const state = store;
-      // const index = this.transactions.indexOf(item);
-      // const shouldDelete = confirm('Are you sure you want to delete this item?');
-      // if (shouldDelete) {
-      //   this.transactions.splice(index, 1);
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('transactions')
-      //     .doc(item.id)
-      //     .delete();
-      // }
       const index = this.transactions.indexOf(item);
       const shouldDelete = confirm('Are you sure you want to delete this account?');
       if (shouldDelete) {
