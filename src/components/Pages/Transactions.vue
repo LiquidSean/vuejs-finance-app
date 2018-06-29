@@ -236,10 +236,9 @@ export default {
       this.dialog = true;
     },
     deleteItem(item) {
-      const index = this.transactions.indexOf(item);
-      const shouldDelete = confirm('Are you sure you want to delete this account?');
+      const shouldDelete = confirm('Are you sure you want to delete this transaction?');
       if (shouldDelete) {
-        this.deleteTransaction(item, index)
+        this.deleteTransaction({id: item.id, db: this.db, user: this.user})
         .then(() => {
           this.close();
         });
@@ -254,54 +253,12 @@ export default {
         transaction_date:  {
           seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000: null,
         },
+        id: this.editedItem.id ? this.editedItem.id : 0,
       };
-      this.saveTransaction(tranObject, this.editedIndex)
+      this.saveTransaction({tranObject, db: this.db, user: this.user})
         .then(() => {
           this.close();
       });
-
-      // const state = store;
-      // // Don't send ID as part of payload
-      // const tranObject = {
-      //   amount: this.editedItem.amount,
-      //   status: this.editedItem.status,
-      //   memo: this.editedItem.memo,
-      //   account_type: this.editedItem.account_type,
-      //   transaction_date:  {
-      //     seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000: null,
-      //   },
-      //   transaction_type: this.editedItem.transaction_type,
-      //   created: this.editedItem.created,
-      // };
-      // this.editedItem.transaction_date = tranObject.transaction_date;
-
-      // if (this.editedIndex > -1) {
-
-      //   Vue.set(this.transactions, this.editedIndex, this.editedItem);
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('transactions')
-      //     .doc(this.editedItem.id.toString())
-      //     .update(tranObject)
-      //     .then(() => {
-      //       this.close();
-      //     });
-      // } else { // add new transaction
-      //   tranObject.created = {
-      //     seconds: Date.now() / 1000,
-      //   };
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('transactions')
-      //     .add(tranObject)
-      //     .then((doc) => {
-      //       this.editedItem.id = doc.id;
-      //       this.transactions.push(this.editedItem);
-      //       this.close();
-      //     });
-      // }
     },
     close() {
       this.dialog = false;

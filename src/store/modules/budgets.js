@@ -9,14 +9,14 @@ export default {
     setBudgets(state, payload) {
       state.budgets = payload;
     },
-    addBudgets(state, budget) {
+    addBudget(state, budget) {
       state.budgets.push(budget);
     },
-    updateAccount(state, budget) {
+    updateBudget(state, budget) {
       const index = state.budgets.findIndex(item => item.id === budget.id);
       Vue.set(state.budgets, index, budget);
     },
-    removeAccount(state, id) {
+    removeBudget(state, id) {
       const index = state.budget.findIndex(item => item.id === id);
       state.budget.budget.splice(index, 1);
     },
@@ -54,21 +54,21 @@ export default {
     }, payload) {
       const self = this;
       return new Promise((resolve) => {
-        const id = payload.tranObject.id;
-        const tranObject = payload.tranObject;
+        const id = payload.budgetObject.id;
+        const budgetObject = payload.budgetObject;
         const db = payload.db;
         const currentUser = payload.user;
-        const findRecord = self.state.transactions.transactions.find(item => item.id === id);
+        const findRecord = self.state.budgets.budgets.find(item => item.id === id);
 
         if (findRecord) {
           return db
             .collection('users')
             .doc(currentUser.uid)
-            .collection('transactions')
-            .doc(this.editedItem.id.toString())
-            .update(tranObject)
+            .collection('budgets')
+            .doc(budgetObject.id.toString())
+            .update(budgetObject)
             .then(() => {
-              commit('updateTransaction', tranObject);
+              commit('updateBudget', budgetObject);
               return resolve();
             });
         }
@@ -76,10 +76,10 @@ export default {
           .collection('users')
           .doc(currentUser.uid)
           .collection('transactions')
-          .add(tranObject)
+          .add(budgetObject)
           .then((doc) => {
-            tranObject.id = doc.id;
-            commit('addTransaction', tranObject);
+            budgetObject.id = doc.id;
+            commit('addBudget', budgetObject);
             return resolve();
           });
       });
@@ -91,16 +91,16 @@ export default {
         const id = payload.id;
         const db = payload.db;
         const currentUser = payload.user;
-        const findRecord = self.state.transactions.transactions.find(item => item.id === id);
+        const findRecord = self.state.budgets.budgets.find(item => item.id === id);
         if (findRecord) {
           return db
             .collection('users')
             .doc(currentUser.uid)
-            .collection('transactions')
+            .collection('budgets')
             .doc(id)
             .delete(id)
             .then(() => {
-              commit('deleteTransaction', id);
+              commit('deleteBudget', id);
               return resolve();
             });
         }

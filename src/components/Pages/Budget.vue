@@ -181,54 +181,22 @@ export default {
         name: this.editedItem.name,
         category: this.editedItem.category,
         frequency: this.editedItem.frequency,
+        id: this.editedItem.id ? this.editedItem.id : 0,
       };
-      this.saveBudget(budgetObject, this.editedIndex)
+      this.saveBudget({budgetObject, db: this.db, user: this.user})
         .then(() => {
           this.close();
       });
-
-      // if (this.editedIndex > -1) {
-      //   Vue.set(this.accounts, this.editedIndex, this.editedItem);
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('accounts')
-      //     .doc(this.editedItem.id.toString())
-      //     .update(acctObject)
-      //     .then(() => {
-      //       this.close();
-      //     });
-      // } else { // add new transaction
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('accounts')
-      //     .add(acctObject)
-      //     .then((doc) => {
-      //       this.editedItem.id = doc.id;
-      //       this.accounts.push(this.editedItem);
-      //       this.close();
-      //     });
-      // }
     },
     deleteItem(item) {
       //const state = store;
       const state = null;
-      const index = this.budgets.indexOf(item);
-      const shouldDelete = confirm('Are you sure you want to delete this account?');
+      const shouldDelete = confirm('Are you sure you want to delete this budget?');
       if (shouldDelete) {
-        this.deleteBudget(item, index)
-        .then(() => {
-          this.close();
-      });
-      //   this.accounts.splice(index, 1);
-      //   state.db
-      //     .collection('users')
-      //     .doc(state.currentUser.uid)
-      //     .collection('accounts')
-      //     .doc(item.id)
-      //     .delete();
-      //
+        this.deleteBudget({id: item.id, db: this.db, user: this.user})
+          .then(() => {
+            this.close();
+        });
       }
     },
     close() {

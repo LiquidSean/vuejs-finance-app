@@ -199,7 +199,6 @@ export default {
     deleteItem(item) {
       //const state = store;
       const state = null;
-      const index = this.accounts.indexOf(item);
       const shouldDelete = confirm('Are you sure you want to delete this account?');
       if (shouldDelete) {
         this.deleteAccount({id: item.id, db: this.db, user: this.user})
