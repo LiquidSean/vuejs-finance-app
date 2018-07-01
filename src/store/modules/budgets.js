@@ -1,3 +1,4 @@
+/* eslint no-param-reassign: "error" */
 import 'firebase/firestore';
 import Vue from 'vue';
 
@@ -22,7 +23,8 @@ export default {
     },
   },
   actions: {
-    setBudgetsListener({ commit,
+    setBudgetsListener({
+      commit,
     }, payload) {
       const budgets = payload.db.collection('users').doc(payload.user.user.uid).collection('budgets');
       budgets
@@ -36,21 +38,25 @@ export default {
           commit('setBudgets', budgetArray);
         }, () => {});
     },
-    async getBudgets({ commit,
+    async getBudgets({
+      commit,
     }, payload) {
-      payload.db.collection('users').doc(payload.user.user.uid).collection('budgets').get()
-        .then((budgets) => {
-          const budgetsAvailable = [];
-
-          budgets.forEach((doc) => {
-            const tran = doc.data();
-            tran.id = doc.id;
-            budgetsAvailable.push(tran);
+      return new Promise((resolve) => {
+        return payload.db.collection('users').doc(payload.user.user.uid).collection('budgets').get()
+          .then((budgets) => {
+            const budgetsAvailable = [];
+            budgets.forEach((doc) => {
+              const tran = doc.data();
+              tran.id = doc.id;
+              budgetsAvailable.push(tran);
+            });
+            commit('setBudgets', budgetsAvailable);
+            return resolve();
           });
-          commit('setBudgets', budgetsAvailable);
-        });
+      });
     },
-    async saveBudget({ commit,
+    async saveBudget({
+      commit,
     }, payload) {
       const self = this;
       return new Promise((resolve) => {
@@ -66,7 +72,12 @@ export default {
             .doc(currentUser.user.uid)
             .collection('budgets')
             .doc(id)
-            .update({ amount: budgetObject.amount, name: budgetObject.name, frequency: budgetObject.frequency, category: budgetObject.category })
+            .update({
+              amount: budgetObject.amount,
+              name: budgetObject.name,
+              frequency: budgetObject.frequency,
+              category: budgetObject.category,
+            })
             .then(() => {
               commit('updateBudget', budgetObject);
               return resolve();
@@ -76,7 +87,12 @@ export default {
           .collection('users')
           .doc(currentUser.user.uid)
           .collection('transactions')
-          .add({ amount: budgetObject.amount, name: budgetObject.name, frequency: budgetObject.frequency, category: budgetObject.category })
+          .add({
+            amount: budgetObject.amount,
+            name: budgetObject.name,
+            frequency: budgetObject.frequency,
+            category: budgetObject.category,
+          })
           .then((doc) => {
             budgetObject.id = doc.id;
             commit('addBudget', budgetObject);
@@ -84,7 +100,8 @@ export default {
           });
       });
     },
-    async deleteBudget({ commit,
+    async deleteBudget({
+      commit,
     }, payload) {
       const self = this;
       return new Promise((resolve) => {

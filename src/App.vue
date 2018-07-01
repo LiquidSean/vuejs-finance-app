@@ -1,9 +1,12 @@
 <template>
   <v-app>
     <v-content>
-      <Nav :selected='path' :user='user' v-if='user'></Nav>
+      <Nav
+        v-if="user"
+        :selected="path"
+        :user="user"></Nav>
       <v-container fluid>
-      <router-view/>
+        <router-view/>
       </v-container>
     </v-content>
   </v-app>
@@ -17,29 +20,29 @@ export default {
   components: { Nav },
   computed: {
     user() {
-      return this.$store.getters.user
+      return this.$store.getters.user;
     },
     db() {
-      return this.$store.getters.db
+      return this.$store.getters.db;
     },
     path() {
       return this.$route.path;
     },
   },
-  created () {
+  created() {
     this.checkCurrentLogin();
   },
-  updated () {
+  updated() {
     this.checkCurrentLogin();
 
   },
   methods: {
-    checkCurrentLogin () {
+    checkCurrentLogin() {
       if (!this.user && this.$route.path !== '/') {
         this.$router.push('/?redirect=' + this.$route.path)
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

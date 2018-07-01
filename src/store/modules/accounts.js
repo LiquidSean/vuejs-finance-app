@@ -1,3 +1,4 @@
+/* eslint no-param-reassign: "error" */
 import 'firebase/firestore';
 import Vue from 'vue';
 
@@ -23,7 +24,8 @@ export default {
     },
   },
   actions: {
-    setAccountsListener({ commit,
+    setAccountsListener({
+      commit,
     }, payload) {
       const accounts = payload.db.collection('users').doc(payload.user.user.uid).collection('accounts');
       accounts
@@ -37,21 +39,26 @@ export default {
           commit('setAccounts', acctArray);
         }, () => {});
     },
-    async getAccounts({ commit,
+    async getAccounts({
+      commit,
     }, payload) {
-      return payload.db.collection('users').doc(payload.user.user.uid).collection('accounts').get()
-        .then((accounts) => {
-          const accountsAvailable = [];
+      return new Promise((resolve) => {
+        return payload.db.collection('users').doc(payload.user.user.uid).collection('accounts').get()
+          .then((accounts) => {
+            const accountsAvailable = [];
 
-          accounts.forEach((doc) => {
-            const acct = doc.data();
-            acct.id = doc.id;
-            accountsAvailable.push(acct);
+            accounts.forEach((doc) => {
+              const acct = doc.data();
+              acct.id = doc.id;
+              accountsAvailable.push(acct);
+            });
+            commit('setAccounts', accountsAvailable);
+            return resolve();
           });
-          commit('setAccounts', accountsAvailable);
-        });
+      });
     },
-    async saveAccount({ commit,
+    async saveAccount({
+      commit,
     }, payload) {
       const self = this;
       return new Promise((resolve) => {
@@ -67,7 +74,12 @@ export default {
             .doc(currentUser.user.uid)
             .collection('accounts')
             .doc(acctObject.id.toString())
-            .update({ balance: acctObject.balance, memo: acctObject.memo, type: acctObject.type, name: acctObject.name })
+            .update({
+              balance: acctObject.balance,
+              memo: acctObject.memo,
+              type: acctObject.type,
+              name: acctObject.name,
+            })
             .then(() => {
               commit('updateAccount', acctObject);
               return resolve();
@@ -85,7 +97,8 @@ export default {
           });
       });
     },
-    async deleteAccount({ commit,
+    async deleteAccount({
+      commit,
     }, payload) {
       const self = this;
       return new Promise((resolve) => {

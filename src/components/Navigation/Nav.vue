@@ -1,6 +1,6 @@
 <template>
   <div v-if="user">
-    <MainNav :selected='selected'></MainNav>
+    <MainNav :selected="selected"></MainNav>
   </div>
 </template>
 
@@ -12,9 +12,9 @@ export default {
   components: { MainNav },
   props: ['selected'],
   computed: {
-    user () {
-      return this.$store.getters.user
-    }
-}
+    user() {
+      return this.$store.getters.user;
+    },
+  },
 };
 </script>

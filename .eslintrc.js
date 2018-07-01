@@ -3,17 +3,20 @@
 module.exports = {
   root: true,
   parserOptions: {
-    parser: 'babel-eslint'
+    "parser": "babel-eslint",
+    "ecmaVersion": 2017,
+    "sourceType": "module"
   },
   env: {
     browser: true,
   },
   // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
   // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
-  extends: ['plugin:vue/essential', 'airbnb-base'],
+  extends: ['eslint:recommended', 'plugin:vue/recommended'],
   // required to lint *.vue files
   plugins: [
-    'vue'
+    'vue',
+    'import'
   ],
   // check if imports actually resolve
   settings: {
@@ -40,6 +43,7 @@ module.exports = {
         'e' // for e.returnvalue
       ]
     }],
+    "vue/html-self-closing": "off",
     // allow optionalDependencies
     'import/no-extraneous-dependencies': ['error', {
       optionalDependencies: ['test/unit/index.js']

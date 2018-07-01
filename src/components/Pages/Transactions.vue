@@ -1,135 +1,137 @@
 <template>
-  <v-container fluid>
+  <v-container v-if="loading" fluid>
+    <font-awesome-icon spin icon="spinner" size="5x"></font-awesome-icon>
+  </v-container>
+  <v-container v-else fluid>
     <v-card>
-      <v-dialog v-model='dialog' max-width='500px'>
-      <v-btn slot='activator' color='primary' dark class='mb-2'>Add New Transaction</v-btn>
-      <v-card>
-        <v-card-title>
-          <span class='headline'>New Transaction</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12 sm6 md4>
-                <v-text-field
-                  label='Amount'
-                  value=''
-                  prefix='$'
-                  type='number'
-                  v-model='editedItem.amount'
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-select
-                  v-model='editedItem.status'
-                  :items='statuses'
-                  label='Status'
-                ></v-select>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-text-field v-model='editedItem.memo' label='Memo'></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-select
-                  v-model='editedItem.transaction_type'
-                  :items='tranTypes'
-                  label='Type'
-                ></v-select>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-menu
-                  :close-on-content-click='false'
-                  v-model='dateMenu'
-                  :nudge-right='40'
-                  lazy
-                  transition='scale-transition'
-                  offset-y
-                  full-width
-                >
+      <v-dialog v-model="dialog" max-width="500px">
+        <v-btn slot="activator" color="primary" dark class="mb-2">Add New Transaction</v-btn>
+        <v-card>
+          <v-card-title>
+            <span class="headline">New Transaction</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12 sm6 md4>
                   <v-text-field
-                    slot='activator'
-                    v-model='computedDateFormatted'
-                    label='Date'
-                    hint='MM-DD-YYYY'
-                    persistent-hint
-                    prepend-icon='event'
-                    readonly
+                    v-model="editedItem.amount"
+                    label="Amount"
+                    value=""
+                    prefix="$"
+                    type="number"
                   ></v-text-field>
-                  <v-date-picker v-model='date' no-title @input='dateMenu = false'></v-date-picker>
-                </v-menu>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-select
-                  v-model='editedItem.account_type'
-                  :items='acctTypes'
-                  label='Account Type'
-                ></v-select>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                        <v-select
-                          v-model="category"
-                          :items="categories"
-                          item-text="text"
-                          item-value="value"
-                          label="Category"
-                          return-object
-                          single-line
-                        ></v-select>
-                      </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color='blue darken-1' flat @click.native='close'>Cancel</v-btn>
-          <v-btn color='blue darken-1' flat @click.native='saveItem'>Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-text-field
-        v-model='search'
-        append-icon='search'
-        label='Search'
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-select
+                    v-model="editedItem.status"
+                    :items="statuses"
+                    label="Status"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.memo" label="Memo"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-select
+                    v-model="editedItem.transaction_type"
+                    :items="tranTypes"
+                    label="Type"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-menu
+                    :close-on-content-click="false"
+                    v-model="dateMenu"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="computedDateFormatted"
+                      label="Date"
+                      hint="MM-DD-YYYY"
+                      persistent-hint
+                      prepend-icon="event"
+                      readonly
+                    ></v-text-field>
+                    <v-date-picker v-model="date" no-title @input="dateMenu = false"></v-date-picker>
+                  </v-menu>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-select
+                    v-model="editedItem.account_type"
+                    :items="acctTypes"
+                    label="Account Type"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-select
+                    v-model="category"
+                    :items="categories"
+                    item-text="text"
+                    item-value="value"
+                    label="Category"
+                    return-object
+                    single-line
+                  ></v-select>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>
+            <v-btn color="blue darken-1" flat @click.native="saveItem">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-text-field
+        v-model="search"
+        append-icon="search"
+        label="Search"
         single-line
         hide-details
       ></v-text-field>
-    <v-data-table
-      :headers='fields'
-      :items='transactions'
-      :search='search'
-    >
-      <template slot='items' slot-scope='props'>
-        <td>{{ props.item.amount }}</td>
-        <td class='text-xs-center'>{{ normalizeDate(props.item.transaction_date) }}</td>
-        <td class='text-xs-center'>{{ normalizeDate(props.item.created) }}</td>
-        <td class='text-xs-center'>{{ props.item.account_type }}</td>
-        <td class='text-xs-center'>{{ props.item.transaction_type }}</td>
-        <td class='text-xs-center'>{{ props.item.memo }}</td>
-        <td class='text-xs-center'>{{ props.item.status }}</td>
-        <td class='text-xs-center'>{{ props.item.category }}</td>
-        <td class='justify-center layout px-0'>
-          <v-btn icon class='mx-0' @click='editItem(props.item)'>
-            <v-icon color='teal'>edit</v-icon>
-          </v-btn>
-          <v-btn icon class='mx-0' @click='deleteItem(props.item)'>
-            <v-icon color='pink'>delete</v-icon>
-          </v-btn>
-        </td>
-      </template>
-      <v-alert slot='no-results' :value='true' color='error' icon='warning'>
-        Your search for '{{ search }}' found no results.
-      </v-alert>
-    </v-data-table>
+      <v-data-table
+        :headers="fields"
+        :items="transactions"
+        :search="search"
+      >
+        <template slot="items" slot-scope="props">
+          <td>{{ props.item.amount }}</td>
+          <td class="text-xs-center">{{ normalizeDate(props.item.transaction_date) }}</td>
+          <td class="text-xs-center">{{ normalizeDate(props.item.created) }}</td>
+          <td class="text-xs-center">{{ props.item.account_type }}</td>
+          <td class="text-xs-center">{{ props.item.transaction_type }}</td>
+          <td class="text-xs-center">{{ props.item.memo }}</td>
+          <td class="text-xs-center">{{ props.item.status }}</td>
+          <td class="text-xs-center">{{ props.item.category }}</td>
+          <td class="justify-center layout px-0">
+            <v-btn icon class="mx-0" @click="editItem(props.item)">
+              <v-icon color="teal">edit</v-icon>
+            </v-btn>
+            <v-btn icon class="mx-0" @click="deleteItem(props.item)">
+              <v-icon color="pink">delete</v-icon>
+            </v-btn>
+          </td>
+        </template>
+        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+          Your search for '{{ search }}' found no results.
+        </v-alert>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
 
 <script>
-import Vue from 'vue';
-import { store } from '../../store';
-import { mapState, mapActions } from 'vuex'
-import transactions from '../../store/modules/transactions';
+import { mapActions } from 'vuex'
 import categories from '../../utils/categories';
+import { accountTypes } from '../../utils/accounts/constants';
+import { transactionTypes, statuses, gridFields } from '../../utils/transactions/constants';
 
 export default {
   name: 'Transactions',
@@ -142,9 +144,10 @@ export default {
       date: null,
       dialog: false,
       editedIndex: -1,
-      statuses: ['pending', 'processed', 'canceled'],
-      acctTypes: ['checking', 'savings'],
-      tranTypes: ['payment', 'void', 'refund', 'authenticate'],
+      statuses: statuses,
+      acctTypes: accountTypes,
+      tranTypes: transactionTypes,
+      loading: true,
       editedItem: {
         id: '',
         amount: 0,
@@ -175,53 +178,7 @@ export default {
         },
         category: '',
       },
-      fields: [
-        {
-          value: 'amount',
-          sortable: true,
-          text: 'Amount',
-        },
-        {
-          value: 'transaction_date',
-          sortable: true,
-          text: 'Transaction Date',
-        },
-        {
-          value: 'created',
-          sortable: true,
-          text: 'Created Date',
-        },
-        {
-          value: 'account_type',
-          sortable: true,
-          text: 'Account Type',
-        },
-        {
-          value: 'transaction_type',
-          sortable: true,
-          text: 'Transaction Type',
-        },
-        {
-          value: 'memo',
-          sortable: true,
-          text: 'Memo',
-        },
-        {
-          value: 'status',
-          sortable: true,
-          text: 'Status',
-        },
-        {
-          value: 'category',
-          sortable: true,
-          text: 'Category',
-        },
-        {
-          value: 'actions',
-          text: 'Actions',
-          sortable: false,
-        },
-      ],
+      fields: gridFields,
     };
   },
   computed: {
@@ -239,11 +196,8 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch('getTransactions', { user: this.user, db: this.db })
-      .then(() => {
-      this.totalRows = transactions.length;
-      this.search = '';
-    });
+    this.totalRows = this.transactions.length;
+    this.search = '';
   },
   methods: {
     ...mapActions({
@@ -260,7 +214,7 @@ export default {
     deleteItem(item) {
       const shouldDelete = confirm('Are you sure you want to delete this transaction?');
       if (shouldDelete) {
-        this.deleteTransaction({id: item.id, db: this.db, user: this.user})
+        this.deleteTransaction({ id: item.id, db: this.db, user: this.user })
         .then(() => {
           this.close();
         });
@@ -273,19 +227,17 @@ export default {
         memo: this.editedItem.memo,
         account_type: this.editedItem.account_type,
         transaction_date:  {
-          seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000: null,
+          seconds: this.computedDateFormatted ? Date.parse(this.computedDateFormatted) / 1000 : null,
         },
         id: this.editedItem.id ? this.editedItem.id : 0,
         category: this.category.value,
         created: {
-          seconds: this.editedItem.created.seconds ? this.editedItem.created.seconds: Date.now() / 1000,
+          seconds: this.editedItem.created.seconds ? this.editedItem.created.seconds : Date.now() / 1000,
         },
         transaction_type: this.editedItem.transaction_type,
       };
-      this.saveTransaction({tranObject, db: this.db, user: this.user})
-        .then(() => {
-          this.close();
-      });
+      this.saveTransaction({ tranObject, db: this.db, user: this.user })
+        .then(() => this.close());
     },
     close() {
       this.dialog = false;
@@ -310,12 +262,9 @@ export default {
       if (date.includes('T')) { // ISO String
         const formattedDate = new Date(date);
         return `${formattedDate.getMonth() + 1}/${formattedDate.getDate()}/${formattedDate.getFullYear()}`;
-      } else {
-        const [year, month, day] = date.split('-');
-        return `${month}/${day}/${year}`;
       }
-      return date;
-
+      const [year, month, day] = date.split('-');
+      return `${month}/${day}/${year}`;
     },
   },
 };

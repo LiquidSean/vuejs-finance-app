@@ -1,13 +1,18 @@
+/* eslint no-param-reassign: "error" */
 import 'firebase/firestore';
 import Vue from 'vue';
 
 export default {
   state: {
     transactions: [],
+    categorizedTransactions: [],
   },
   mutations: {
     setTransactions(state, payload) {
       state.transactions = payload;
+    },
+    setCategorizedTransactions(state, payload) {
+      state.categorizedTransactions = payload;
     },
     addTransaction(state, transaction) {
       state.transactions.push(transaction);
@@ -22,7 +27,8 @@ export default {
     },
   },
   actions: {
-    setTransactionsListener({ commit,
+    setTransactionsListener({
+      commit,
     }, payload) {
       const transactions = payload.db.collection('users').doc(payload.user.user.uid).collection('transactions');
       transactions
@@ -36,7 +42,8 @@ export default {
           commit('setTransactions', trans);
         }, () => {});
     },
-    async getTransactions({ commit,
+    async getTransactions({
+      commit,
     }, payload) {
       return payload.db.collection('users').doc(payload.user.user.uid).collection('transactions').get()
         .then((transactions) => {
@@ -50,7 +57,26 @@ export default {
           commit('setTransactions', transactionsAvailable);
         });
     },
-    async saveTransaction({ commit,
+    async getCategorizedTransactions({ commit }) {
+      const self = this;
+      return new Promise((resolve) => {
+        const categorizedTransactions = self.state.transactions.transactions.reduce((
+          tranCategories,
+          transaction,
+        ) => {
+          if (tranCategories[transaction.category]) {
+            tranCategories[transaction.category] += Number.parseFloat(transaction.amount);
+          } else {
+            tranCategories[transaction.category] = Number.parseFloat(transaction.amount);
+          }
+          return tranCategories;
+        }, {});
+        commit('setCategorizedTransactions', categorizedTransactions);
+        return resolve();
+      });
+    },
+    async saveTransaction({
+      commit,
     }, payload) {
       const self = this;
       return new Promise((resolve) => {
@@ -103,7 +129,8 @@ export default {
           });
       });
     },
-    async deleteTransaction({ commit,
+    async deleteTransaction({
+      commit,
     }, payload) {
       const self = this;
       return new Promise((resolve) => {
@@ -130,6 +157,9 @@ export default {
   getters: {
     transactions(state) {
       return state.transactions;
+    },
+    categorizedTransactions(state) {
+      return state.categorizedTransactions;
     },
   },
 };
