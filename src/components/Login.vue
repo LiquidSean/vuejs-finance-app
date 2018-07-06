@@ -55,11 +55,8 @@ export default {
   },
   methods: {
     signIn() {
-      const email = this.email;
-      const pwd = this.password;
-      firebase.auth().signInWithEmailAndPassword(email, pwd).then((user) => {
-        localStorage.user = JSON.stringify(user);
-        this.$store.dispatch('signUserIn', { email: this.email, password: this.password });
+        this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
+        .then(() => {
         this.$store.dispatch('initializeDB');
         this.$router.replace('overview');
       }, (err) => {
